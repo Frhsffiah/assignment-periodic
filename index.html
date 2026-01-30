@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assignment Test</title>
+
+  <!-- Google Login library -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    :root{
+      --cardBorder: #cfcfcf;
+      --innerBorder: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+    }
+    *{ box-sizing: border-box; margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; }
+
+    body{
+      background: white;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Title like Image A */
+    .title{
+      width: 100%;
+      text-align: left;
+      font-size: 56px;
+      font-weight: 600;
+      padding: 40px 0 20px 80px;
+    }
+
+    /* Big centered rectangle border */
+    .outer-box{
+      width: min(900px, 90vw);
+      height: min(520px, 70vh);
+      border: 2px solid var(--cardBorder);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+    }
+
+    /* Inner login card */
+    .login-card{
+      width: min(420px, 85%);
+      background: white;
+      border: 1px solid var(--innerBorder);
+      border-radius: 10px;
+      padding: 42px 30px;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .login-card h2{
+      font-size: 22px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .login-card p{
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    /* Center the google button */
+    #loginDiv{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Output box (shows data / errors) */
+    #output{
+      width: min(900px, 90vw);
+      margin: 16px 0 40px;
+      white-space: pre-wrap;
+      font-size: 12px;
+      color: #111;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 14px;
+      display: none;
+      background: #fafafa;
+    }
+
+    @media (max-width: 600px){
+      .title{
+        font-size: 40px;
+        padding-left: 24px;
+      }
+      .outer-box{
+        height: 520px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="title">Sign In With Google</div>
+
+  <div class="outer-box">
+    <div class="login-card">
+      <h2>Welcome Back</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+
+      <!-- Google button will appear here -->
+      <div id="loginDiv"></div>
+    </div>
+  </div>
+
+  <pre id="output"></pre>
+
+  <script>
+    // ✅ Your Google OAuth Client ID
+    const CLIENT_ID = "202812098782-r407ijuq1pjef9ud1uvashkkmutvn80g.apps.googleusercontent.com";
+
+    // ✅ Your spreadsheet ID
+    const SPREADSHEET_ID = "1Oaw3MSHnskBBtvLyU70Y94Z5Un5ehswv7xxiHhZNG-E";
+
+    // ✅ IMPORTANT: Sheet tab has a space, so wrap in single quotes
+    const RANGE = "'Data Template'!A1:F";
+
+    const outputEl = document.getElementById("output");
+
+    function show(msg) {
+      outputEl.style.display = "block";
+      outputEl.textContent = msg;
+    }
+
+    async function fetchSheet(accessToken) {
+      // ✅ IMPORTANT: encode range so quotes/space/! and : won't break the URL
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(RANGE)}`;
+
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        show("❌ Sheets API Error:\n" + JSON.stringify(data.error, null, 2));
+        return;
+      }
+
+      show("✅ Sheet loaded successfully!\n\n" + JSON.stringify(data.values, null, 2));
+      console.log("Sheet data:", data.values);
+
+      // OPTIONAL: Hide the big login box after success
+      // document.querySelector(".outer-box").style.display = "none";
+    }
+
+    window.onload = function () {
+      // ✅ Token client gives ACCESS TOKEN for Google Sheets API
+      const tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: "https://www.googleapis.com/auth/spreadsheets.readonly",
+        callback: (tokenResponse) => {
+          if (tokenResponse.error) {
+            show("❌ Token error:\n" + JSON.stringify(tokenResponse, null, 2));
+            return;
+          }
+          fetchSheet(tokenResponse.access_token);
+        }
+      });
+
+      // ✅ Render the standard Google button (UI style)
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: () => {
+          // Get permission + access token
+          tokenClient.requestAccessToken({ prompt: "consent" });
+        }
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById("loginDiv"),
+        {
+          theme: "filled_blue",
+          size: "large",
+          text: "signin_with",
+          shape: "rectangular",
+          width: 240
+        }
+      );
+
+      show("Click the Google button → allow permission → sheet data will appear below.");
+    };
+  </script>
+</body>
+</html>
