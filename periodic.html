@@ -1,37 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Periodic 3D (Google Sheet Public)</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>Assignment - Periodic (CSV Sheet Data + Pyramid)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
   <style>
     * { box-sizing: border-box; font-family: Helvetica, Arial, sans-serif; }
     body { margin: 0; overflow: hidden; background: #000; color: #fff; }
 
     #info {
-      position: absolute;
-      top: 10px;
-      width: 100%;
-      text-align: center;
-      z-index: 2;
-      user-select: none;
-      pointer-events: none;
-      opacity: 0.75;
-      font-size: 13px;
+      position: absolute; top: 10px; width: 100%;
+      text-align: center; z-index: 2;
+      user-select: none; pointer-events: none;
+      opacity: 0.75; font-size: 13px;
     }
 
     #legend {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 3;
-      padding: 10px 12px;
-      border-radius: 10px;
+      position: absolute; top: 12px; left: 12px; z-index: 3;
+      padding: 10px 12px; border-radius: 10px;
       border: 1px solid rgba(127,255,255,0.35);
       background: rgba(0,0,0,0.45);
-      font-size: 13px;
-      user-select: none;
+      font-size: 13px; user-select: none;
     }
     #legend .r { color: #ff3b30; }
     #legend .o { color: #ff9500; }
@@ -40,11 +30,8 @@
     #container { position: absolute; inset: 0; }
 
     #menu {
-      position: absolute;
-      bottom: 20px;
-      width: 100%;
-      text-align: center;
-      z-index: 3;
+      position: absolute; bottom: 20px; width: 100%;
+      text-align: center; z-index: 3;
     }
 
     button {
@@ -62,6 +49,7 @@
     button:hover { background-color: rgba(0,255,255,0.25); }
     button:active { color: #000; background-color: rgba(0,255,255,0.75); }
 
+    /* Tiles */
     .element {
       width: 140px;
       height: 180px;
@@ -127,7 +115,8 @@
       opacity: 0.95;
     }
 
-    #loading {
+    /* Loading overlay */
+    #loadingOverlay {
       position: absolute;
       inset: 0;
       z-index: 10;
@@ -136,8 +125,9 @@
       justify-content: center;
       background: radial-gradient(circle at center, rgba(0,255,255,0.06), rgba(0,0,0,0.92) 60%);
     }
+
     .loadingCard {
-      width: min(720px, 92vw);
+      width: min(760px, 92vw);
       padding: 26px 22px;
       border-radius: 16px;
       border: 1px solid rgba(127,255,255,0.45);
@@ -145,18 +135,27 @@
       background: rgba(0,0,0,0.35);
       text-align: center;
     }
+
     .loadingCard h1 {
-      margin: 0 0 8px 0;
-      font-size: 34px;
+      margin: 0 0 10px 0;
+      font-size: 40px;
+      letter-spacing: 0.5px;
     }
+
     .loadingCard p {
-      margin: 0;
+      margin: 0 0 12px 0;
       color: rgba(255,255,255,0.72);
       font-size: 14px;
       line-height: 1.5;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
       white-space: pre-wrap;
       text-align: left;
-      max-width: 660px;
+      max-width: 720px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -171,7 +170,7 @@
     <span class="g">Green &gt; 200K</span>
   </div>
 
-  <div id="info">three.js css3d - periodic table (Google Sheet data)</div>
+  <div id="info">three.js css3d - periodic table (Public CSV data)</div>
   <div id="container"></div>
 
   <div id="menu">
@@ -179,15 +178,18 @@
     <button id="sphere">SPHERE</button>
     <button id="helix">HELIX</button>
     <button id="grid">GRID</button>
+    <button id="pyramid">PYRAMID</button>
   </div>
 
-  <div id="loading">
+  <div id="loadingOverlay">
     <div class="loadingCard">
-      <h1>Loading Sheet Data...</h1>
-      <p id="status">Please wait. Fetching from Google Sheet (public viewer access)...</p>
+      <h1>Loading Data</h1>
+      <p>Fetching your public CSV from Google Sheets and building the 3D layouts…</p>
+      <div id="status">Starting…</div>
     </div>
   </div>
 
+  <!-- IMPORTANT: Put three.module.js inside /build and jsm inside /examples/jsm -->
   <script type="importmap">
     {
       "imports": {
@@ -198,27 +200,29 @@
   </script>
 
   <script type="module">
-    import * as THREE from 'three';
-    import TWEEN from 'three/addons/libs/tween.module.js';
-    import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
-    import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
+    import * as THREE from "three";
+    import TWEEN from "three/addons/libs/tween.module.js";
+    import { TrackballControls } from "three/addons/controls/TrackballControls.js";
+    import { CSS3DRenderer, CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
 
-    // ====== YOUR SETTINGS ======
-    const SPREADSHEET_ID = "1Oaw3MSHnskBBtvLyU70Y94Z5Un5ehswv7xxiHhZNG-E";
-    const SHEET_TAB_NAME = "Data Template";
-    // Assumed columns A-F: Name, Photo, Age, Country, Interest, Net Worth
-    const RANGE_A1 = `'${SHEET_TAB_NAME}'!A1:F`;
-    // ==========================
+    // ===== YOUR PUBLIC CSV LINK (works for everyone, no login needed) =====
+    const CSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQnfaQnOekqBUL92EWQZ2Y8dR2DT04CpSmm9m2PLzKJdO9EP5OXulbbwrEcsGSTLyVbmmZz6RXPzx9L/pub?gid=1278840914&single=true&output=csv";
 
+    // ===== DOM =====
+    const overlayEl = document.getElementById("loadingOverlay");
     const statusEl = document.getElementById("status");
-    const loadingEl = document.getElementById("loading");
-
-    let camera, scene, renderer, controls;
-    const objects = [];
-    const targets = { table: [], sphere: [], helix: [], grid: [] };
+    const containerEl = document.getElementById("container");
 
     function setStatus(msg) { statusEl.textContent = msg; }
 
+    // ===== THREE STATE =====
+    let camera, scene, renderer, controls;
+
+    const objects = [];
+    const targets = { table: [], sphere: [], helix: [], grid: [], pyramid: [] };
+
+    // ===== Helpers =====
     function parseNetWorthToNumber(value) {
       if (!value) return 0;
       const cleaned = String(value).replace(/[^\d.]/g, "");
@@ -227,82 +231,82 @@
     }
 
     function netWorthColor(netWorthNum) {
-      if (netWorthNum < 100000) return "rgba(255,59,48,0.75)";
-      if (netWorthNum <= 200000) return "rgba(255,149,0,0.75)";
-      return "rgba(52,199,89,0.75)";
+      if (netWorthNum < 100000) return "rgba(255,59,48,0.75)";      // red
+      if (netWorthNum <= 200000) return "rgba(255,149,0,0.75)";     // orange
+      return "rgba(52,199,89,0.75)";                                // green
     }
 
-    async function fetchSheetPublic() {
-      // Public sheet still needs API key OR "published as CSV" method.
-      // BEST: publish the sheet tab to web as CSV:
-      // File -> Share -> Publish to web -> Sheet: Data Template -> CSV
-      // Then use that CSV URL here.
-
-      // ✅ CSV publish URL format:
-      // https://docs.google.com/spreadsheets/d/<ID>/gviz/tq?tqx=out:csv&sheet=<SHEET_NAME>
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB_NAME)}`;
-
-      const res = await fetch(csvUrl);
-      if (!res.ok) throw new Error("Failed to fetch published CSV. Did you publish the sheet to web as CSV?");
-      return await res.text();
-    }
-
-    function csvTo2DArray(csvText) {
-      // Simple CSV parser (handles commas inside quotes)
+    // Simple CSV parser that supports commas in quotes
+    function parseCSV(text) {
       const rows = [];
       let row = [];
       let cur = "";
       let inQuotes = false;
 
-      for (let i = 0; i < csvText.length; i++) {
-        const c = csvText[i];
-        const next = csvText[i + 1];
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
 
-        if (c === '"' && inQuotes && next === '"') {
+        if (ch === '"' && inQuotes && next === '"') {
           cur += '"';
           i++;
           continue;
         }
-        if (c === '"') {
+
+        if (ch === '"') {
           inQuotes = !inQuotes;
           continue;
         }
-        if (c === ',' && !inQuotes) {
+
+        if (ch === "," && !inQuotes) {
           row.push(cur);
           cur = "";
           continue;
         }
-        if ((c === '\n' || c === '\r') && !inQuotes) {
-          if (cur.length || row.length) {
-            row.push(cur);
-            rows.push(row);
-            row = [];
-            cur = "";
-          }
+
+        if ((ch === "\n" || ch === "\r") && !inQuotes) {
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cur);
+          cur = "";
+          if (row.length > 1 || row[0] !== "") rows.push(row);
+          row = [];
           continue;
         }
-        cur += c;
+
+        cur += ch;
       }
-      if (cur.length || row.length) {
-        row.push(cur);
-        rows.push(row);
-      }
+
+      // last cell
+      row.push(cur);
+      if (row.length > 1 || row[0] !== "") rows.push(row);
+
       return rows;
     }
 
-    function rowsToObjects(values) {
-      if (!values.length) return [];
-      const header = values[0].map(h => String(h || "").trim());
+    function rowsToObjects(rows) {
+      if (!rows.length) return [];
 
+      const header = rows[0].map(h => String(h || "").trim().toLowerCase());
+
+      function findIndex(names) {
+        for (const n of names) {
+          const idx = header.indexOf(n);
+          if (idx >= 0) return idx;
+        }
+        return -1;
+      }
+
+      // Expect: Name, Photo, Age, Country, Interest, Net Worth
       const idx = {
-        name: header.findIndex(h => h.toLowerCase() === "name"),
-        photo: header.findIndex(h => h.toLowerCase() === "photo"),
-        age: header.findIndex(h => h.toLowerCase() === "age"),
-        country: header.findIndex(h => h.toLowerCase() === "country"),
-        interest: header.findIndex(h => h.toLowerCase() === "interest"),
-        networth: header.findIndex(h => h.toLowerCase().replace(/\s+/g, "") === "networth")
+        name: findIndex(["name"]),
+        photo: findIndex(["photo", "image", "avatar"]),
+        age: findIndex(["age"]),
+        country: findIndex(["country"]),
+        interest: findIndex(["interest", "hobby", "hobbies"]),
+        networth: findIndex(["net worth", "networth", "net_worth"])
       };
 
+      // fallback positions A-F
       if (idx.name < 0) idx.name = 0;
       if (idx.photo < 0) idx.photo = 1;
       if (idx.age < 0) idx.age = 2;
@@ -311,8 +315,8 @@
       if (idx.networth < 0) idx.networth = 5;
 
       const out = [];
-      for (let r = 1; r < values.length; r++) {
-        const row = values[r];
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
         if (!row || row.length === 0) continue;
 
         const name = row[idx.name] ?? "";
@@ -346,14 +350,14 @@
 
       renderer = new CSS3DRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      document.getElementById('container').appendChild(renderer.domElement);
+      containerEl.appendChild(renderer.domElement);
 
       controls = new TrackballControls(camera, renderer.domElement);
       controls.minDistance = 500;
       controls.maxDistance = 6000;
-      controls.addEventListener('change', render);
+      controls.addEventListener("change", render);
 
-      window.addEventListener('resize', onWindowResize);
+      window.addEventListener("resize", onWindowResize);
 
       animate();
     }
@@ -365,37 +369,39 @@
       targets.sphere.length = 0;
       targets.helix.length = 0;
       targets.grid.length = 0;
+      targets.pyramid.length = 0;
     }
 
     function buildFromData(data) {
       clearScene();
 
+      // 1) Create CSS3D tiles
       for (let i = 0; i < data.length; i++) {
         const d = data[i];
 
-        const element = document.createElement('div');
-        element.className = 'element';
+        const element = document.createElement("div");
+        element.className = "element";
         element.style.backgroundColor = netWorthColor(d.netWorthNum);
 
-        const number = document.createElement('div');
-        number.className = 'number';
+        const number = document.createElement("div");
+        number.className = "number";
         number.textContent = String(i + 1);
         element.appendChild(number);
 
-        const img = document.createElement('img');
-        img.className = 'photo';
+        const img = document.createElement("img");
+        img.className = "photo";
         img.alt = d.name;
         img.src = d.photo || "";
         img.onerror = () => { img.style.display = "none"; };
         element.appendChild(img);
 
-        const symbol = document.createElement('div');
-        symbol.className = 'symbol';
+        const symbol = document.createElement("div");
+        symbol.className = "symbol";
         symbol.textContent = d.name;
         element.appendChild(symbol);
 
-        const details = document.createElement('div');
-        details.className = 'details';
+        const details = document.createElement("div");
+        details.className = "details";
         details.innerHTML =
           `${d.country || "-"} | Age: ${d.age || "-"}<br>` +
           `${d.interest || "-"}<br>` +
@@ -406,19 +412,21 @@
         objectCSS.position.x = Math.random() * 4000 - 2000;
         objectCSS.position.y = Math.random() * 4000 - 2000;
         objectCSS.position.z = Math.random() * 4000 - 2000;
-
         scene.add(objectCSS);
+
         objects.push(objectCSS);
       }
 
-      // TABLE: 20x10
+      // 2) Targets
+
+      // TABLE: 20 x 10
       for (let i = 0; i < objects.length; i++) {
         const col = (i % 20) + 1;
         const row = Math.floor(i / 20) + 1;
 
         const obj = new THREE.Object3D();
-        obj.position.x = (col * 140) - 1470;
-        obj.position.y = -(row * 180) + 990;
+        obj.position.x = (col * 140) - 1470; // centered
+        obj.position.y = -(row * 180) + 990; // centered
         targets.table.push(obj);
       }
 
@@ -458,28 +466,114 @@
         targets.helix.push(obj);
       }
 
-      // GRID: 5x4x10
+      // GRID: 5 x 4 x 10
       for (let i = 0; i < objects.length; i++) {
         const x = (i % 5) * 400 - 800;
         const y = -(Math.floor(i / 5) % 4) * 400 + 600;
-        const layer = Math.floor(i / 20);
-        const z = layer * 1000 - 4500;
+        const layer = Math.floor(i / 20);     // 20 items per layer
+        const z = layer * 1000 - 4500;        // ~10 layers
 
         const obj = new THREE.Object3D();
         obj.position.set(x, y, z);
         targets.grid.push(obj);
       }
 
-      document.getElementById('table').onclick = () => transform(targets.table, 2000);
-      document.getElementById('sphere').onclick = () => transform(targets.sphere, 2000);
-      document.getElementById('helix').onclick = () => transform(targets.helix, 2000);
-      document.getElementById('grid').onclick = () => transform(targets.grid, 2000);
+      // PYRAMID (TETRAHEDRON): 4 triangular faces
+      (function buildTetrahedronTargets() {
+        const v0 = new THREE.Vector3( 1,  1,  1);
+        const v1 = new THREE.Vector3( 1, -1, -1);
+        const v2 = new THREE.Vector3(-1,  1, -1);
+        const v3 = new THREE.Vector3(-1, -1,  1);
 
+        const S = 950;
+        [v0, v1, v2, v3].forEach(v => v.normalize().multiplyScalar(S));
+
+        const faces = [
+          [v0, v1, v2],
+          [v0, v3, v1],
+          [v0, v2, v3],
+          [v1, v3, v2]
+        ];
+
+        const total = objects.length;
+        const perFaceBase = Math.floor(total / 4);
+        const remainder = total % 4;
+
+        function pointInTriangle(A, B, C, u, v) {
+          const AB = new THREE.Vector3().subVectors(B, A);
+          const AC = new THREE.Vector3().subVectors(C, A);
+          return new THREE.Vector3()
+            .copy(A)
+            .add(AB.multiplyScalar(u))
+            .add(AC.multiplyScalar(v));
+        }
+
+        function faceNormal(A, B, C) {
+          return new THREE.Vector3()
+            .subVectors(B, A)
+            .cross(new THREE.Vector3().subVectors(C, A))
+            .normalize();
+        }
+
+        const tempLook = new THREE.Vector3();
+
+        for (let f = 0; f < 4; f++) {
+          const A = faces[f][0], B = faces[f][1], C = faces[f][2];
+          const n = faceNormal(A, B, C);
+          const count = perFaceBase + (f < remainder ? 1 : 0);
+
+          // triangular grid size k where k*(k+1)/2 >= count
+          let k = 1;
+          while ((k * (k + 1)) / 2 < count) k++;
+
+          let placed = 0;
+          for (let r = 0; r < k && placed < count; r++) {
+            for (let c = 0; c <= r && placed < count; c++) {
+              const t = (k === 1) ? 0.5 : r / (k - 1);  // 0..1
+              const s = (r === 0) ? 0.5 : c / r;        // 0..1
+
+              // barycentric inside triangle
+              const u = t * (1 - s);
+              const v = t * s;
+
+              const p = pointInTriangle(A, B, C, u, v)
+                .add(n.clone().multiplyScalar(40)); // push outward
+
+              const obj = new THREE.Object3D();
+              obj.position.copy(p);
+
+              tempLook.copy(p).multiplyScalar(2);
+              obj.lookAt(tempLook);
+
+              targets.pyramid.push(obj);
+              placed++;
+            }
+          }
+        }
+
+        // safety fill if any missing
+        while (targets.pyramid.length < objects.length) {
+          const obj = new THREE.Object3D();
+          obj.position.set(Math.random()*200-100, Math.random()*200-100, Math.random()*200-100);
+          targets.pyramid.push(obj);
+        }
+      })();
+
+      // 3) Buttons
+      document.getElementById("table").onclick = () => transform(targets.table, 2000);
+      document.getElementById("sphere").onclick = () => transform(targets.sphere, 2000);
+      document.getElementById("helix").onclick = () => transform(targets.helix, 2000);
+      document.getElementById("grid").onclick = () => transform(targets.grid, 2000);
+      document.getElementById("pyramid").onclick = () => transform(targets.pyramid, 2000);
+
+      // default
       transform(targets.table, 2000);
+      render();
     }
 
     function transform(targetList, duration) {
       TWEEN.removeAll();
+
       for (let i = 0; i < objects.length; i++) {
         const object = objects[i];
         const target = targetList[i];
@@ -496,7 +590,10 @@
           .start();
       }
 
-      new TWEEN.Tween(this).to({}, duration * 2).onUpdate(render).start();
+      new TWEEN.Tween(this)
+        .to({}, duration * 2)
+        .onUpdate(render)
+        .start();
     }
 
     function onWindowResize() {
@@ -516,27 +613,31 @@
       renderer.render(scene, camera);
     }
 
+    // ===== Start =====
     async function main() {
-      try {
-        setStatus("Fetching published CSV from Google Sheet...\nIf this fails, publish the sheet to web as CSV.");
-        initThree();
+      initThree();
 
-        const csvText = await fetchSheetPublic();
-        const values = csvTo2DArray(csvText);
-        const data = rowsToObjects(values);
+      try {
+        setStatus("Fetching CSV…");
+        const res = await fetch(CSV_URL, { cache: "no-store" });
+        if (!res.ok) throw new Error(`CSV fetch failed: ${res.status} ${res.statusText}`);
+        const text = await res.text();
+
+        setStatus("Parsing CSV…");
+        const rows = parseCSV(text);
+        const data = rowsToObjects(rows);
 
         if (!data.length) {
-          throw new Error("No data rows found. Check your Data Template tab has data (columns A-F).");
+          throw new Error("No rows found. Make sure your CSV has Name, Photo, Age, Country, Interest, Net Worth.");
         }
 
-        setStatus(`Loaded ${data.length} rows.\nBuilding 3D view...`);
-        loadingEl.style.display = "none";
+        setStatus(`Loaded ${data.length} rows.\nBuilding 3D layouts…`);
         buildFromData(data);
-        render();
 
+        overlayEl.style.display = "none";
       } catch (err) {
         console.error(err);
-        setStatus("❌ ERROR:\n" + (err?.message || String(err)) + "\n\nFix:\n1) Google Sheet -> File -> Share -> Publish to web\n2) Choose tab 'Data Template' -> CSV\n3) Publish\n4) Reload this page");
+        setStatus("❌ " + (err?.message || String(err)));
       }
     }
 
