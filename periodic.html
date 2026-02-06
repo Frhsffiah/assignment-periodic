@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Assignment - Periodic (CSV Sheet Data + Pyramid)</title>
+  <title>Assignment - Periodic (CSV Data)</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
@@ -11,17 +11,15 @@
 
     #info {
       position: absolute; top: 10px; width: 100%;
-      text-align: center; z-index: 2;
-      user-select: none; pointer-events: none;
-      opacity: 0.75; font-size: 13px;
+      text-align: center; z-index: 2; user-select: none;
+      pointer-events: none; opacity: 0.75; font-size: 13px;
     }
 
     #legend {
       position: absolute; top: 12px; left: 12px; z-index: 3;
       padding: 10px 12px; border-radius: 10px;
       border: 1px solid rgba(127,255,255,0.35);
-      background: rgba(0,0,0,0.45);
-      font-size: 13px; user-select: none;
+      background: rgba(0,0,0,0.45); font-size: 13px; user-select: none;
     }
     #legend .r { color: #ff3b30; }
     #legend .o { color: #ff9500; }
@@ -33,17 +31,12 @@
       position: absolute; bottom: 20px; width: 100%;
       text-align: center; z-index: 3;
     }
-
     button {
       color: rgba(127,255,255,0.85);
       background: rgba(0,0,0,0.2);
       outline: 1px solid rgba(127,255,255,0.75);
-      border: 0;
-      padding: 8px 14px;
-      margin: 0 6px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
+      border: 0; padding: 8px 14px; margin: 0 6px;
+      border-radius: 8px; cursor: pointer; font-weight: 600;
       letter-spacing: 0.5px;
     }
     button:hover { background-color: rgba(0,255,255,0.25); }
@@ -51,113 +44,48 @@
 
     /* Tiles */
     .element {
-      width: 140px;
-      height: 180px;
-      border-radius: 12px;
+      width: 140px; height: 180px; border-radius: 12px;
       box-shadow: 0 0 12px rgba(0,255,255,0.25);
       border: 1px solid rgba(127,255,255,0.25);
-      text-align: center;
-      line-height: normal;
-      cursor: default;
-      position: relative;
-      overflow: hidden;
-      backdrop-filter: blur(2px);
+      text-align: center; line-height: normal; cursor: default;
+      position: relative; overflow: hidden; backdrop-filter: blur(2px);
     }
     .element:hover {
       box-shadow: 0 0 18px rgba(0,255,255,0.45);
       border: 1px solid rgba(127,255,255,0.55);
     }
-
     .element .number {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.85);
-      opacity: 0.9;
+      position: absolute; top: 10px; right: 12px;
+      font-size: 12px; color: rgba(255,255,255,0.85); opacity: 0.9;
     }
-
     .element img.photo {
-      position: absolute;
-      top: 14px;
-      left: 50%;
+      position: absolute; top: 14px; left: 50%;
       transform: translateX(-50%);
-      width: 54px;
-      height: 54px;
-      border-radius: 999px;
-      object-fit: cover;
-      border: 2px solid rgba(255,255,255,0.6);
+      width: 54px; height: 54px; border-radius: 999px;
+      object-fit: cover; border: 2px solid rgba(255,255,255,0.6);
       background: rgba(0,0,0,0.2);
     }
-
     .element .symbol {
-      position: absolute;
-      top: 78px;
-      left: 10px;
-      right: 10px;
-      font-size: 16px;
-      font-weight: 800;
-      color: rgba(255,255,255,0.92);
+      position: absolute; top: 78px; left: 10px; right: 10px;
+      font-size: 16px; font-weight: 800; color: rgba(255,255,255,0.92);
       text-shadow: 0 0 10px rgba(0,0,0,0.35);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
     .element .details {
-      position: absolute;
-      bottom: 14px;
-      left: 10px;
-      right: 10px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.88);
-      line-height: 1.35;
-      opacity: 0.95;
+      position: absolute; bottom: 14px; left: 10px; right: 10px;
+      font-size: 12px; color: rgba(255,255,255,0.88);
+      line-height: 1.35; opacity: 0.95;
     }
 
-    /* Loading overlay */
-    #loadingOverlay {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at center, rgba(0,255,255,0.06), rgba(0,0,0,0.92) 60%);
-    }
-
-    .loadingCard {
-      width: min(760px, 92vw);
-      padding: 26px 22px;
-      border-radius: 16px;
-      border: 1px solid rgba(127,255,255,0.45);
-      box-shadow: 0 0 24px rgba(0,255,255,0.12);
+    /* Small status */
+    #statusBar {
+      position: absolute; left: 12px; bottom: 76px; z-index: 3;
+      padding: 8px 10px; border-radius: 10px;
+      border: 1px solid rgba(127,255,255,0.25);
       background: rgba(0,0,0,0.35);
-      text-align: center;
-    }
-
-    .loadingCard h1 {
-      margin: 0 0 10px 0;
-      font-size: 40px;
-      letter-spacing: 0.5px;
-    }
-
-    .loadingCard p {
-      margin: 0 0 12px 0;
-      color: rgba(255,255,255,0.72);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    #status {
-      margin-top: 10px;
-      font-size: 13px;
-      color: rgba(255,255,255,0.7);
+      font-size: 12px; color: rgba(255,255,255,0.75);
+      max-width: 520px;
       white-space: pre-wrap;
-      text-align: left;
-      max-width: 720px;
-      margin-left: auto;
-      margin-right: auto;
     }
   </style>
 </head>
@@ -170,8 +98,10 @@
     <span class="g">Green &gt; 200K</span>
   </div>
 
-  <div id="info">three.js css3d - periodic table (Public CSV data)</div>
+  <div id="info">three.js css3d - periodic table (public CSV data)</div>
   <div id="container"></div>
+
+  <div id="statusBar">Loading CSV…</div>
 
   <div id="menu">
     <button id="table">TABLE</button>
@@ -181,15 +111,7 @@
     <button id="pyramid">PYRAMID</button>
   </div>
 
-  <div id="loadingOverlay">
-    <div class="loadingCard">
-      <h1>Loading Data</h1>
-      <p>Fetching your public CSV from Google Sheets and building the 3D layouts…</p>
-      <div id="status">Starting…</div>
-    </div>
-  </div>
-
-  <!-- IMPORTANT: Put three.module.js inside /build and jsm inside /examples/jsm -->
+  <!-- IMPORTANT: adjust import paths to match your repo structure -->
   <script type="importmap">
     {
       "imports": {
@@ -200,29 +122,60 @@
   </script>
 
   <script type="module">
-    import * as THREE from "three";
-    import TWEEN from "three/addons/libs/tween.module.js";
-    import { TrackballControls } from "three/addons/controls/TrackballControls.js";
-    import { CSS3DRenderer, CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
+    import * as THREE from 'three';
+    import TWEEN from 'three/addons/libs/tween.module.js';
+    import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+    import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
-    // ===== YOUR PUBLIC CSV LINK (works for everyone, no login needed) =====
-    const CSV_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQnfaQnOekqBUL92EWQZ2Y8dR2DT04CpSmm9m2PLzKJdO9EP5OXulbbwrEcsGSTLyVbmmZz6RXPzx9L/pub?gid=1278840914&single=true&output=csv";
+    // ===========================
+    // PUBLIC CSV (so everyone can view without Google login)
+    // Use your link:
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQnfaQnOekqBUL92EWQZ2Y8dR2DT04CpSmm9m2PLzKJdO9EP5OXulbbwrEcsGSTLyVbmmZz6RXPzx9L/pub?gid=1278840914&single=true&output=csv";
+    // ===========================
 
-    // ===== DOM =====
-    const overlayEl = document.getElementById("loadingOverlay");
-    const statusEl = document.getElementById("status");
-    const containerEl = document.getElementById("container");
+    const statusBar = document.getElementById("statusBar");
 
-    function setStatus(msg) { statusEl.textContent = msg; }
-
-    // ===== THREE STATE =====
     let camera, scene, renderer, controls;
-
     const objects = [];
     const targets = { table: [], sphere: [], helix: [], grid: [], pyramid: [] };
 
-    // ===== Helpers =====
+    function setStatus(msg) { statusBar.textContent = msg; }
+
+    // ---------- CSV parsing (supports quotes + commas) ----------
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cur = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        const next = text[i + 1];
+
+        if (c === '"' ) {
+          if (inQuotes && next === '"') { // escaped quote
+            cur += '"'; i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (c === ',' && !inQuotes) {
+          row.push(cur); cur = "";
+        } else if ((c === '\n' || c === '\r') && !inQuotes) {
+          if (c === '\r' && next === '\n') i++;
+          row.push(cur);
+          // ignore empty trailing rows
+          if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
+          row = []; cur = "";
+        } else {
+          cur += c;
+        }
+      }
+      // last cell
+      row.push(cur);
+      if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
+      return rows;
+    }
+
     function parseNetWorthToNumber(value) {
       if (!value) return 0;
       const cleaned = String(value).replace(/[^\d.]/g, "");
@@ -231,102 +184,36 @@
     }
 
     function netWorthColor(netWorthNum) {
-      if (netWorthNum < 100000) return "rgba(255,59,48,0.75)";      // red
-      if (netWorthNum <= 200000) return "rgba(255,149,0,0.75)";     // orange
-      return "rgba(52,199,89,0.75)";                                // green
+      if (netWorthNum < 100000) return "rgba(255,59,48,0.75)";   // red
+      if (netWorthNum <= 200000) return "rgba(255,149,0,0.75)";  // orange
+      return "rgba(52,199,89,0.75)";                             // green
     }
 
-    // Simple CSV parser that supports commas in quotes
-    function parseCSV(text) {
-      const rows = [];
-      let row = [];
-      let cur = "";
-      let inQuotes = false;
+    function rowsToObjects(values) {
+      if (!values || !values.length) return [];
 
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        const next = text[i + 1];
-
-        if (ch === '"' && inQuotes && next === '"') {
-          cur += '"';
-          i++;
-          continue;
-        }
-
-        if (ch === '"') {
-          inQuotes = !inQuotes;
-          continue;
-        }
-
-        if (ch === "," && !inQuotes) {
-          row.push(cur);
-          cur = "";
-          continue;
-        }
-
-        if ((ch === "\n" || ch === "\r") && !inQuotes) {
-          if (ch === "\r" && next === "\n") i++;
-          row.push(cur);
-          cur = "";
-          if (row.length > 1 || row[0] !== "") rows.push(row);
-          row = [];
-          continue;
-        }
-
-        cur += ch;
-      }
-
-      // last cell
-      row.push(cur);
-      if (row.length > 1 || row[0] !== "") rows.push(row);
-
-      return rows;
-    }
-
-    function rowsToObjects(rows) {
-      if (!rows.length) return [];
-
-      const header = rows[0].map(h => String(h || "").trim().toLowerCase());
-
-      function findIndex(names) {
-        for (const n of names) {
-          const idx = header.indexOf(n);
-          if (idx >= 0) return idx;
-        }
-        return -1;
-      }
+      const header = values[0].map(h => String(h || "").trim().toLowerCase());
+      const findCol = (name) => header.findIndex(h => h.replace(/\s+/g,'') === name);
 
       // Expect: Name, Photo, Age, Country, Interest, Net Worth
-      const idx = {
-        name: findIndex(["name"]),
-        photo: findIndex(["photo", "image", "avatar"]),
-        age: findIndex(["age"]),
-        country: findIndex(["country"]),
-        interest: findIndex(["interest", "hobby", "hobbies"]),
-        networth: findIndex(["net worth", "networth", "net_worth"])
-      };
-
-      // fallback positions A-F
-      if (idx.name < 0) idx.name = 0;
-      if (idx.photo < 0) idx.photo = 1;
-      if (idx.age < 0) idx.age = 2;
-      if (idx.country < 0) idx.country = 3;
-      if (idx.interest < 0) idx.interest = 4;
-      if (idx.networth < 0) idx.networth = 5;
+      let idxName = findCol("name");       if (idxName < 0) idxName = 0;
+      let idxPhoto = findCol("photo");     if (idxPhoto < 0) idxPhoto = 1;
+      let idxAge = findCol("age");         if (idxAge < 0) idxAge = 2;
+      let idxCountry = findCol("country"); if (idxCountry < 0) idxCountry = 3;
+      let idxInterest = findCol("interest"); if (idxInterest < 0) idxInterest = 4;
+      let idxNet = findCol("networth");    if (idxNet < 0) idxNet = 5;
 
       const out = [];
-      for (let r = 1; r < rows.length; r++) {
-        const row = rows[r];
-        if (!row || row.length === 0) continue;
-
-        const name = row[idx.name] ?? "";
+      for (let r = 1; r < values.length; r++) {
+        const row = values[r] || [];
+        const name = row[idxName] ?? "";
         if (!String(name).trim()) continue;
 
-        const photo = row[idx.photo] ?? "";
-        const age = row[idx.age] ?? "";
-        const country = row[idx.country] ?? "";
-        const interest = row[idx.interest] ?? "";
-        const netWorthRaw = row[idx.networth] ?? "";
+        const photo = row[idxPhoto] ?? "";
+        const age = row[idxAge] ?? "";
+        const country = row[idxCountry] ?? "";
+        const interest = row[idxInterest] ?? "";
+        const netWorthRaw = row[idxNet] ?? "";
         const netWorthNum = parseNetWorthToNumber(netWorthRaw);
 
         out.push({
@@ -342,6 +229,12 @@
       return out;
     }
 
+    function clearScene() {
+      for (const obj of objects) scene.remove(obj);
+      objects.length = 0;
+      for (const k of Object.keys(targets)) targets[k].length = 0;
+    }
+
     function initThree() {
       camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
       camera.position.z = 3000;
@@ -350,58 +243,47 @@
 
       renderer = new CSS3DRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      containerEl.appendChild(renderer.domElement);
+      document.getElementById('container').appendChild(renderer.domElement);
 
       controls = new TrackballControls(camera, renderer.domElement);
       controls.minDistance = 500;
       controls.maxDistance = 6000;
-      controls.addEventListener("change", render);
+      controls.addEventListener('change', render);
 
-      window.addEventListener("resize", onWindowResize);
+      window.addEventListener('resize', onWindowResize);
 
       animate();
     }
 
-    function clearScene() {
-      for (const obj of objects) scene.remove(obj);
-      objects.length = 0;
-      targets.table.length = 0;
-      targets.sphere.length = 0;
-      targets.helix.length = 0;
-      targets.grid.length = 0;
-      targets.pyramid.length = 0;
-    }
-
-    function buildFromData(data) {
+    function buildTiles(data) {
       clearScene();
 
-      // 1) Create CSS3D tiles
       for (let i = 0; i < data.length; i++) {
         const d = data[i];
 
-        const element = document.createElement("div");
-        element.className = "element";
+        const element = document.createElement('div');
+        element.className = 'element';
         element.style.backgroundColor = netWorthColor(d.netWorthNum);
 
-        const number = document.createElement("div");
-        number.className = "number";
+        const number = document.createElement('div');
+        number.className = 'number';
         number.textContent = String(i + 1);
         element.appendChild(number);
 
-        const img = document.createElement("img");
-        img.className = "photo";
+        const img = document.createElement('img');
+        img.className = 'photo';
         img.alt = d.name;
         img.src = d.photo || "";
         img.onerror = () => { img.style.display = "none"; };
         element.appendChild(img);
 
-        const symbol = document.createElement("div");
-        symbol.className = "symbol";
+        const symbol = document.createElement('div');
+        symbol.className = 'symbol';
         symbol.textContent = d.name;
         element.appendChild(symbol);
 
-        const details = document.createElement("div");
-        details.className = "details";
+        const details = document.createElement('div');
+        details.className = 'details';
         details.innerHTML =
           `${d.country || "-"} | Age: ${d.age || "-"}<br>` +
           `${d.interest || "-"}<br>` +
@@ -416,21 +298,22 @@
 
         objects.push(objectCSS);
       }
+    }
 
-      // 2) Targets
-
-      // TABLE: 20 x 10
+    function makeTargets_Table() {
+      // TABLE: 20 x 10 (requirement)
       for (let i = 0; i < objects.length; i++) {
-        const col = (i % 20) + 1;
-        const row = Math.floor(i / 20) + 1;
+        const col = (i % 20) + 1;            // 1..20
+        const row = Math.floor(i / 20) + 1;  // 1..10+
 
         const obj = new THREE.Object3D();
-        obj.position.x = (col * 140) - 1470; // centered
-        obj.position.y = -(row * 180) + 990; // centered
+        obj.position.x = (col * 140) - 1470; // centered 20 cols
+        obj.position.y = -(row * 180) + 990; // centered 10 rows
         targets.table.push(obj);
       }
+    }
 
-      // SPHERE
+    function makeTargets_Sphere() {
       const vector = new THREE.Vector3();
       for (let i = 0, l = objects.length; i < l; i++) {
         const phi = Math.acos(-1 + (2 * i) / l);
@@ -444,131 +327,141 @@
 
         targets.sphere.push(obj);
       }
+    }
 
-      // DOUBLE HELIX
-      let pairIndex = 0;
+    function makeTargets_DoubleHelix() {
+      // FIXED: Real double helix (two smooth spirals)
+      // We distribute items along "t" (height), alternating strand A/B.
+      const vector = new THREE.Vector3();
+      const radius = 900;
+      const angleStep = 0.35;   // controls twist tightness
+      const yStep = 25;         // vertical spacing
+
       for (let i = 0; i < objects.length; i++) {
-        const strand = i % 2;
-        if (strand === 0) pairIndex++;
+        const strand = i % 2;            // 0 or 1
+        const t = Math.floor(i / 2);    // index along height
 
-        const t = pairIndex * 0.35;
-        const theta = t + (strand ? Math.PI : 0);
-        const y = -(pairIndex * 10) + 450;
+        const theta = t * angleStep + (strand ? Math.PI : 0);
+        const y = -(t * yStep) + 650;
 
         const obj = new THREE.Object3D();
-        obj.position.setFromCylindricalCoords(900, theta, y);
+        obj.position.setFromCylindricalCoords(radius, theta, y);
 
-        vector.x = obj.position.x * 2;
-        vector.y = obj.position.y;
-        vector.z = obj.position.z * 2;
+        // Face outward
+        vector.set(obj.position.x * 2, obj.position.y, obj.position.z * 2);
         obj.lookAt(vector);
 
         targets.helix.push(obj);
       }
+    }
 
-      // GRID: 5 x 4 x 10
+    function makeTargets_Grid() {
+      // GRID: 5 x 4 x 10 (requirement)
       for (let i = 0; i < objects.length; i++) {
-        const x = (i % 5) * 400 - 800;
-        const y = -(Math.floor(i / 5) % 4) * 400 + 600;
-        const layer = Math.floor(i / 20);     // 20 items per layer
-        const z = layer * 1000 - 4500;        // ~10 layers
+        const x = (i % 5) * 400 - 800;                 // 5 columns
+        const y = -(Math.floor(i / 5) % 4) * 400 + 600; // 4 rows
+        const layer = Math.floor(i / 20);              // 20 per layer
+        const z = layer * 1000 - 4500;                 // 10 layers approx
 
         const obj = new THREE.Object3D();
         obj.position.set(x, y, z);
         targets.grid.push(obj);
       }
+    }
 
-      // PYRAMID (TETRAHEDRON): 4 triangular faces
-      (function buildTetrahedronTargets() {
-        const v0 = new THREE.Vector3( 1,  1,  1);
-        const v1 = new THREE.Vector3( 1, -1, -1);
-        const v2 = new THREE.Vector3(-1,  1, -1);
-        const v3 = new THREE.Vector3(-1, -1,  1);
+    function pointsOnTriangle(A, B, C, countNeeded) {
+      // Create a triangular grid of points using barycentric coordinates
+      // Pick smallest R where R*(R+1)/2 >= countNeeded
+      let R = 2;
+      while ((R * (R + 1)) / 2 < countNeeded) R++;
 
-        const S = 950;
-        [v0, v1, v2, v3].forEach(v => v.normalize().multiplyScalar(S));
+      const pts = [];
+      if (R === 2) {
+        pts.push(A.clone(), B.clone(), C.clone());
+        return pts;
+      }
 
-        const faces = [
-          [v0, v1, v2],
-          [v0, v3, v1],
-          [v0, v2, v3],
-          [v1, v3, v2]
-        ];
+      for (let r = 0; r < R; r++) {
+        const u = r / (R - 1);          // 0..1
+        for (let c = 0; c <= r; c++) {
+          const v = (r === 0) ? 0 : (c / (R - 1));
+          // ensure u+v <= 1 by using w = 1 - u - v' (we use a triangle fill style)
+          // A is apex of triangle region
+          const vv = c / (R - 1);
+          const uu = r / (R - 1);
 
-        const total = objects.length;
-        const perFaceBase = Math.floor(total / 4);
-        const remainder = total % 4;
+          // Convert to barycentric on triangle:
+          // point = (1-uu)*A + (uu - vv)*B + vv*C  (keeps inside triangle)
+          const wA = 1 - uu;
+          const wB = uu - vv;
+          const wC = vv;
 
-        function pointInTriangle(A, B, C, u, v) {
-          const AB = new THREE.Vector3().subVectors(B, A);
-          const AC = new THREE.Vector3().subVectors(C, A);
-          return new THREE.Vector3()
-            .copy(A)
-            .add(AB.multiplyScalar(u))
-            .add(AC.multiplyScalar(v));
+          if (wB < -1e-6) continue; // safety
+
+          const p = new THREE.Vector3()
+            .addScaledVector(A, wA)
+            .addScaledVector(B, wB)
+            .addScaledVector(C, wC);
+
+          pts.push(p);
+          if (pts.length >= countNeeded) return pts;
         }
+      }
+      return pts;
+    }
 
-        function faceNormal(A, B, C) {
-          return new THREE.Vector3()
-            .subVectors(B, A)
-            .cross(new THREE.Vector3().subVectors(C, A))
-            .normalize();
-        }
+    function makeTargets_Tetrahedron() {
+      // FIXED: True 4-face pyramid (tetrahedron). No sphere.
+      // We place points on the 4 triangle faces of a regular tetrahedron.
 
-        const tempLook = new THREE.Vector3();
+      const size = 1400; // overall scale of tetrahedron
+      const vector = new THREE.Vector3();
 
-        for (let f = 0; f < 4; f++) {
-          const A = faces[f][0], B = faces[f][1], C = faces[f][2];
-          const n = faceNormal(A, B, C);
-          const count = perFaceBase + (f < remainder ? 1 : 0);
+      // Regular tetrahedron vertices (centered), normalized then scaled
+      const v0 = new THREE.Vector3( 1,  1,  1).normalize().multiplyScalar(size);
+      const v1 = new THREE.Vector3( 1, -1, -1).normalize().multiplyScalar(size);
+      const v2 = new THREE.Vector3(-1,  1, -1).normalize().multiplyScalar(size);
+      const v3 = new THREE.Vector3(-1, -1,  1).normalize().multiplyScalar(size);
 
-          // triangular grid size k where k*(k+1)/2 >= count
-          let k = 1;
-          while ((k * (k + 1)) / 2 < count) k++;
+      const faces = [
+        [v0, v1, v2],
+        [v0, v3, v1],
+        [v0, v2, v3],
+        [v1, v3, v2]
+      ];
 
-          let placed = 0;
-          for (let r = 0; r < k && placed < count; r++) {
-            for (let c = 0; c <= r && placed < count; c++) {
-              const t = (k === 1) ? 0.5 : r / (k - 1);  // 0..1
-              const s = (r === 0) ? 0.5 : c / r;        // 0..1
+      // Divide objects across 4 faces (roughly equal)
+      const total = objects.length;
+      const perFace = Math.ceil(total / 4);
 
-              // barycentric inside triangle
-              const u = t * (1 - s);
-              const v = t * s;
+      // Build point lists for each face
+      const facePoints = faces.map(([A, B, C]) => pointsOnTriangle(A, B, C, perFace));
 
-              const p = pointInTriangle(A, B, C, u, v)
-                .add(n.clone().multiplyScalar(40)); // push outward
+      // Place objects face by face
+      for (let i = 0; i < total; i++) {
+        const faceIndex = Math.floor(i / perFace); // 0..3
+        const localIndex = i % perFace;
 
-              const obj = new THREE.Object3D();
-              obj.position.copy(p);
+        const pts = facePoints[Math.min(faceIndex, 3)];
+        const p = pts[Math.min(localIndex, pts.length - 1)];
 
-              tempLook.copy(p).multiplyScalar(2);
-              obj.lookAt(tempLook);
+        const obj = new THREE.Object3D();
+        obj.position.copy(p);
 
-              targets.pyramid.push(obj);
-              placed++;
-            }
-          }
-        }
+        // Face outward from center
+        vector.copy(p).multiplyScalar(2);
+        obj.lookAt(vector);
 
-        // safety fill if any missing
-        while (targets.pyramid.length < objects.length) {
-          const obj = new THREE.Object3D();
-          obj.position.set(Math.random()*200-100, Math.random()*200-100, Math.random()*200-100);
-          targets.pyramid.push(obj);
-        }
-      })();
+        targets.pyramid.push(obj);
+      }
+    }
 
-      // 3) Buttons
-      document.getElementById("table").onclick = () => transform(targets.table, 2000);
-      document.getElementById("sphere").onclick = () => transform(targets.sphere, 2000);
-      document.getElementById("helix").onclick = () => transform(targets.helix, 2000);
-      document.getElementById("grid").onclick = () => transform(targets.grid, 2000);
-      document.getElementById("pyramid").onclick = () => transform(targets.pyramid, 2000);
-
-      // default
-      transform(targets.table, 2000);
-      render();
+    function buildTargets() {
+      makeTargets_Table();
+      makeTargets_Sphere();
+      makeTargets_DoubleHelix();
+      makeTargets_Grid();
+      makeTargets_Tetrahedron();
     }
 
     function transform(targetList, duration) {
@@ -580,17 +473,19 @@
         if (!target) continue;
 
         new TWEEN.Tween(object.position)
-          .to({ x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration)
+          .to({ x: target.position.x, y: target.position.y, z: target.position.z },
+              Math.random() * duration + duration)
           .easing(TWEEN.Easing.Exponential.InOut)
           .start();
 
         new TWEEN.Tween(object.rotation)
-          .to({ x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration)
+          .to({ x: target.rotation.x, y: target.rotation.y, z: target.rotation.z },
+              Math.random() * duration + duration)
           .easing(TWEEN.Easing.Exponential.InOut)
           .start();
       }
 
-      new TWEEN.Tween(this)
+      new TWEEN.Tween({})
         .to({}, duration * 2)
         .onUpdate(render)
         .start();
@@ -613,35 +508,44 @@
       renderer.render(scene, camera);
     }
 
-    // ===== Start =====
-    async function main() {
-      initThree();
+    // ---------- Load data + start ----------
+    async function loadCSVData() {
+      setStatus("Loading CSV…");
+      const res = await fetch(CSV_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to load CSV. HTTP " + res.status);
 
-      try {
-        setStatus("Fetching CSV…");
-        const res = await fetch(CSV_URL, { cache: "no-store" });
-        if (!res.ok) throw new Error(`CSV fetch failed: ${res.status} ${res.statusText}`);
-        const text = await res.text();
+      const text = await res.text();
+      const rows = parseCSV(text);
+      const data = rowsToObjects(rows);
 
-        setStatus("Parsing CSV…");
-        const rows = parseCSV(text);
-        const data = rowsToObjects(rows);
+      if (!data.length) throw new Error("CSV loaded but no usable rows found.");
+      setStatus(`Loaded ${data.length} rows ✅`);
 
-        if (!data.length) {
-          throw new Error("No rows found. Make sure your CSV has Name, Photo, Age, Country, Interest, Net Worth.");
-        }
-
-        setStatus(`Loaded ${data.length} rows.\nBuilding 3D layouts…`);
-        buildFromData(data);
-
-        overlayEl.style.display = "none";
-      } catch (err) {
-        console.error(err);
-        setStatus("❌ " + (err?.message || String(err)));
-      }
+      return data;
     }
 
-    main();
+    function wireButtons() {
+      document.getElementById('table').onclick = () => transform(targets.table, 2000);
+      document.getElementById('sphere').onclick = () => transform(targets.sphere, 2000);
+      document.getElementById('helix').onclick = () => transform(targets.helix, 2000);
+      document.getElementById('grid').onclick = () => transform(targets.grid, 2000);
+      document.getElementById('pyramid').onclick = () => transform(targets.pyramid, 2000);
+    }
+
+    (async function main() {
+      try {
+        initThree();
+        const data = await loadCSVData();
+        buildTiles(data);
+        buildTargets();
+        wireButtons();
+        transform(targets.table, 2000);
+        setStatus(`Ready ✅  (TABLE / SPHERE / HELIX / GRID / PYRAMID)`);
+      } catch (e) {
+        console.error(e);
+        setStatus("❌ " + (e?.message || String(e)));
+      }
+    })();
   </script>
 </body>
 </html>
